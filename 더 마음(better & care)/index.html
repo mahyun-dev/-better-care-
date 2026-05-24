@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+  <meta http-equiv="X-Frame-Options" content="DENY" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; script-src 'self' 'unsafe-inline';" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <title>더 나음 (better &amp; care) - 삶을 돕는 스타일 케어</title>
+  <meta name="description" content="거동이 불편한 분들, 수술 후 회복 중인 분들을 위한 기능성 의류 전문 쇼핑몰. 편안함과 자신감을 더해드려요." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ===================== GNB ===================== -->
+  <header class="gnb" id="gnb" role="banner">
+    <div class="gnb__inner container">
+      <!-- 로고 -->
+      <a href="index.html" class="gnb__logo" aria-label="더 나음 홈으로 이동">
+        <div class="gnb__logo-icon" aria-hidden="true">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="18" cy="18" r="17" stroke="#F5A623" stroke-width="2"/>
+            <path d="M10 20 C10 14 14 10 18 10 C22 10 26 14 26 20" stroke="#F5A623" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+            <path d="M14 16 C14 16 16 22 18 22 C20 22 22 16 22 16" fill="#F5A623" opacity="0.3"/>
+            <circle cx="12" cy="14" r="2" fill="#6BAE75"/>
+            <circle cx="24" cy="14" r="2" fill="#6BAE75"/>
+          </svg>
+        </div>
+        <div class="gnb__logo-text">
+          <span class="gnb__logo-kr">더 나음</span>
+          <span class="gnb__logo-en">better &amp; care</span>
+          <span class="gnb__logo-sub">삶을 돕는 스타일 케어</span>
+        </div>
+      </a>
+
+      <!-- 메인 메뉴 -->
+      <nav class="gnb__nav" aria-label="주요 메뉴">
+        <ul class="gnb__menu" role="list">
+          <li><a href="#subscription" class="gnb__menu-link">코디 구독</a></li>
+          <li><a href="#special" class="gnb__menu-link">스페셜 코디</a></li>
+          <li class="gnb__menu-item--has-dropdown">
+            <a href="#category" class="gnb__menu-link">카테고리</a>
+            <div class="gnb__dropdown" role="region" aria-label="카테고리 하위 메뉴">
+              <ul role="list">
+                <li><a href="#" class="gnb__dropdown-link">아우터</a></li>
+                <li><a href="#" class="gnb__dropdown-link">상의</a></li>
+                <li><a href="#" class="gnb__dropdown-link">하의</a></li>
+                <li><a href="#" class="gnb__dropdown-link">원피스</a></li>
+                <li><a href="#" class="gnb__dropdown-link">이너웨어</a></li>
+                <li><a href="#" class="gnb__dropdown-link">신발</a></li>
+                <li><a href="#" class="gnb__dropdown-link">가방</a></li>
+                <li><a href="#" class="gnb__dropdown-link">액세서리</a></li>
+              </ul>
+            </div>
+          </li>
+          <li><a href="#occupation" class="gnb__menu-link">직종별 코디</a></li>
+          <li><a href="#care" class="gnb__menu-link gnb__menu-link--highlight">환자/케어 의류</a></li>
+        </ul>
+      </nav>
+
+      <!-- 유틸리티 -->
+      <div class="gnb__utils" role="navigation" aria-label="사용자 메뉴">
+        <button class="gnb__util-btn" id="searchBtn" aria-label="검색" type="button">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true"><circle cx="9.5" cy="9.5" r="7.5" stroke="currentColor" stroke-width="1.8"/><path d="M15 15L20 20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </button>
+        <button class="gnb__util-btn gnb__util-btn--notify" id="notifyBtn" aria-label="알림" type="button">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true"><path d="M11 2C11 2 5 5 5 12V16H17V12C17 5 11 2 11 2Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 16C9 17.1046 9.89543 18 11 18C12.1046 18 13 17.1046 13 16" stroke="currentColor" stroke-width="1.8"/><circle cx="16.5" cy="5.5" r="3.5" fill="#F5A623" class="notify-badge" id="notifyBadge"/></svg>
+        </button>
+        <a href="#cart" class="gnb__util-btn gnb__util-btn--cart" id="cartBtn" aria-label="장바구니">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true"><path d="M3 3H5L7.5 14H17.5L20 7H6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="18" r="1.5" fill="currentColor"/><circle cx="16" cy="18" r="1.5" fill="currentColor"/></svg>
+          <span class="cart-count" id="cartCount" aria-label="장바구니 상품 수">0</span>
+        </a>
+        <a href="#mypage" class="gnb__util-btn" id="authBtn" aria-label="로그인 및 회원가입">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true"><circle cx="11" cy="7" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M3 19C3 15.134 6.58172 12 11 12C15.4183 12 19 15.134 19 19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </a>
+        <!-- 모바일 햄버거 -->
+        <button class="gnb__hamburger" id="hamburgerBtn" aria-label="메뉴 열기" aria-expanded="false" aria-controls="mobileMenu" type="button">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 검색 바 (숨김 → 토글) -->
+    <div class="gnb__search-bar" id="searchBar" role="search" aria-hidden="true">
+      <div class="container">
+        <form class="gnb__search-form" id="searchForm" novalidate>
+          <label for="searchInput" class="sr-only">상품 검색</label>
+          <input type="search" id="searchInput" name="q" class="gnb__search-input" placeholder="상품명, 상황(예: 수술 후, 휠체어)으로 검색해보세요" maxlength="100" autocomplete="off" />
+          <button type="submit" class="gnb__search-submit" aria-label="검색하기">
+            <svg width="20" height="20" viewBox="0 0 22 22" fill="none" aria-hidden="true"><circle cx="9.5" cy="9.5" r="7.5" stroke="currentColor" stroke-width="1.8"/><path d="M15 15L20 20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </button>
+          <button type="button" class="gnb__search-close" id="searchClose" aria-label="검색 닫기">✕</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- 모바일 메뉴 -->
+    <nav class="mobile-menu" id="mobileMenu" aria-label="모바일 메뉴" aria-hidden="true" role="dialog" aria-modal="true">
+      <button class="mobile-menu__close" id="mobileMenuClose" aria-label="메뉴 닫기" type="button">✕</button>
+      <ul class="mobile-menu__list" role="list">
+        <li><a href="#subscription" class="mobile-menu__link">코디 구독</a></li>
+        <li><a href="#special" class="mobile-menu__link">스페셜 코디</a></li>
+        <li><a href="#category" class="mobile-menu__link">카테고리</a></li>
+        <li><a href="#occupation" class="mobile-menu__link">직종별 코디</a></li>
+        <li><a href="#care" class="mobile-menu__link mobile-menu__link--highlight">환자/케어 의류</a></li>
+      </ul>
+      <div class="mobile-menu__utils">
+        <a href="#mypage" class="mobile-menu__util-link" id="mobileAuthBtn">로그인/회원가입</a>
+        <a href="#cart" class="mobile-menu__util-link" id="mobileCartBtn">장바구니</a>
+      </div>
+    </nav>
+    <div class="mobile-overlay" id="mobileOverlay" aria-hidden="true"></div>
+  </header>
+
+  <main id="main" role="main">
+
+    <!-- ===================== SECTION 1: Hero ===================== -->
+    <section class="hero" aria-labelledby="heroHeading">
+      <div class="hero__banner-layer" id="heroBannerHost" aria-hidden="true"></div>
+      <div class="container">
+        <div class="hero__inner">
+          <!-- 좌측: 텍스트 + CTA -->
+          <div class="hero__content">
+            <p class="hero__eyebrow">삶을 돕는 스타일 케어</p>
+            <h1 class="hero__heading" id="heroHeading">
+              당신의 일상에<br />
+              <em class="hero__heading-em-beige">편안함</em>과
+              <em class="hero__heading-em-green">자신감</em>을<br />
+              더해드려요.
+            </h1>
+            <p class="hero__desc">
+              거동이 불편한 분들, 사지 절단·수술 후 회복 중인 분들을 위한<br class="pc-only" />
+              기능성 의류를 정기 구독으로 편리하게 만나보세요.
+            </p>
+            <div class="hero__cta-group">
+              <a href="#subscription" class="btn btn--primary btn--lg">
+                <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="2" y="3" width="16" height="14" rx="3" stroke="currentColor" stroke-width="1.8"/><path d="M6 7H14M6 11H11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                데일리 코디 구독하기
+              </a>
+              <a href="#care" class="btn btn--outline btn--lg btn--pink">
+                <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 17C10 17 3 12.5 3 7.5C3 5.01 5.01 3 7.5 3C8.8 3 10 4 10 4C10 4 11.2 3 12.5 3C14.99 3 17 5.01 17 7.5C17 12.5 10 17 10 17Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+                환자/케어 의류 보러가기
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== SECTION 2: 퀵 메뉴 ===================== -->
+    <section class="quick-nav" aria-labelledby="quickNavHeading">
+      <div class="container">
+        <h2 id="quickNavHeading" class="sr-only">빠른 메뉴</h2>
+        <ul class="quick-nav__list" role="list" id="quickNavList">
+          <!-- JS로 렌더링 -->
+        </ul>
+      </div>
+    </section>
+
+    <!-- ===================== SECTION 3: BEST 코디 구독 ===================== -->
+    <section class="best-codi" id="subscription" aria-labelledby="bestCodiHeading">
+      <div class="container">
+        <div class="section-header">
+          <div>
+            <span class="section-badge section-badge--gold">🏆 BEST 코디 구독</span>
+            <p class="section-sub">가장 많이 사랑받은 코디를 만나보세요!</p>
+          </div>
+          <a href="#" class="section-more" aria-label="BEST 코디 구독 더보기">더보기 &rsaquo;</a>
+        </div>
+        <div class="best-codi__grid" id="bestCodiGrid" role="list" aria-label="베스트 코디 목록">
+          <!-- JS로 렌더링 -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== SECTION 4: 카테고리별 의류 ===================== -->
+    <section class="category-section" id="category" aria-labelledby="categoryHeading">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title" id="categoryHeading">카테고리별 의류</h2>
+          <a href="#" class="section-more" aria-label="카테고리 전체보기">더보기 &rsaquo;</a>
+        </div>
+        <ul class="category-section__list" role="list" id="categoryList">
+          <!-- JS로 렌더링 -->
+        </ul>
+      </div>
+    </section>
+
+    <!-- ===================== SECTION 5: 환자·케어 의류 구독 ===================== -->
+    <section class="care-section" id="care" aria-labelledby="careHeading">
+      <div class="container">
+        <div class="care-section__header">
+          <span class="section-eyebrow">환자·케어 의류 구독</span>
+          <h2 class="care-section__title" id="careHeading">
+            삶을 돕는 스타일 케어<span class="care-title-heart" aria-hidden="true">♡</span>
+          </h2>
+          <p class="care-section__desc">
+            케어가 필요하거나 특별한 착용이 필요한 분들을 위한<br class="pc-only" />
+            맞춤 의류를 정기 구독으로 배송해드립니다.
+          </p>
+        </div>
+
+        <!-- 큐레이션 카드 4개 -->
+        <div class="care-section__cards" id="careCards" role="list" aria-label="케어 의류 큐레이션">
+          <!-- JS로 렌더링 -->
+        </div>
+
+        <!-- 퀵 필터 바 -->
+        <div class="care-section__filters" role="group" aria-label="케어 의류 필터">
+          <button class="care-filter-btn" type="button">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M3 9H15M6 5H12M8 13H10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            장애 유형별 추천
+          </button>
+          <button class="care-filter-btn" type="button">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.8"/><path d="M9 6V10M9 12V12.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            혼자 착용 난이도 표시
+          </button>
+          <button class="care-filter-btn" type="button">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><rect x="2" y="4" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M6 4V3M12 4V3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            의료·재활 상황별 필터
+          </button>
+          <button class="care-filter-btn care-filter-btn--highlight" type="button">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="7" cy="9" r="4" stroke="currentColor" stroke-width="1.8"/><circle cx="13" cy="9" r="4" stroke="currentColor" stroke-width="1.8"/></svg>
+            보호자 계정 연동
+          </button>
+        </div>
+
+        <!-- 세부 기능 배너 -->
+        <div class="care-section__features" role="list" aria-label="케어 의류 특화 기능">
+          <div class="care-feature-item" role="listitem">
+            <span class="care-feature-icon" aria-hidden="true">👕</span>
+            <strong>장애 유형별 추천</strong>
+            <p>나에게 맞는 의류를 추천해요</p>
+          </div>
+          <div class="care-feature-item" role="listitem">
+            <span class="care-feature-icon" aria-hidden="true">🔢</span>
+            <strong>혼자 입기 쉬운 정도 표시</strong>
+            <p>착용 난이도를 한눈에 확인해요</p>
+          </div>
+          <div class="care-feature-item" role="listitem">
+            <span class="care-feature-icon" aria-hidden="true">🏥</span>
+            <strong>절단 환자 맞춤 의류</strong>
+            <p>의지(의수/의족) 착용을 고려한 설계</p>
+          </div>
+          <div class="care-feature-item" role="listitem">
+            <span class="care-feature-icon" aria-hidden="true">👪</span>
+            <strong>보호자 계정 연동</strong>
+            <p>가족이나 피돌봄자를 대신해 관리해요</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== SECTION 6: 직종별 & 스페셜 코디 ===================== -->
+    <div class="two-col-sections container">
+      <!-- 직종별 코디 -->
+      <section class="occupation-section" id="occupation" aria-labelledby="occupationHeading">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title" id="occupationHeading">직종별 코디 구독</h2>
+            <p class="section-sub">당신의 일에 맞는 스타일을 제안드려요.</p>
+          </div>
+          <a href="#" class="section-more" aria-label="직종별 코디 더보기">더보기 &rsaquo;</a>
+        </div>
+        <ul class="occupation-section__list" role="list" id="occupationList">
+          <!-- JS로 렌더링 -->
+        </ul>
+      </section>
+
+      <!-- 스페셜 코디 -->
+      <section class="special-section" id="special" aria-labelledby="specialHeading">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title" id="specialHeading">스페셜 코디</h2>
+            <p class="section-sub">결혼식, 데이트룩, 면접 등 특별한 순간을 위한 코디.</p>
+          </div>
+          <a href="#" class="section-more" aria-label="스페셜 코디 더보기">더보기 &rsaquo;</a>
+        </div>
+        <div class="special-section__grid" id="specialGrid" role="list" aria-label="스페셜 코디 목록">
+          <!-- JS로 렌더링 -->
+        </div>
+      </section>
+    </div>
+
+    <!-- ===================== SECTION 7: 브랜드 스토리 / Trust Builder ===================== -->
+    <section class="trust-section" aria-labelledby="trustHeading">
+      <div class="container">
+        <!-- 신뢰 지표 -->
+        <div class="trust-section__stats" role="list" aria-label="서비스 신뢰 지표">
+          <div class="trust-stat" role="listitem">
+            <span class="trust-stat__num" data-target="15000" aria-label="누적 고객 15,000명 이상">0</span>
+            <span class="trust-stat__suffix">+</span>
+            <p class="trust-stat__label">누적 고객</p>
+          </div>
+          <div class="trust-stat trust-stat--highlight" role="listitem">
+            <span class="trust-stat__num" data-target="4.9" data-decimal="true" aria-label="만족도 4.9점">0</span>
+            <span class="trust-stat__suffix">/ 5</span>
+            <p class="trust-stat__label">만족도</p>
+          </div>
+          <div class="trust-stat" role="listitem">
+            <span class="trust-stat__num" data-target="92" aria-label="재구매율 92퍼센트">0</span>
+            <span class="trust-stat__suffix">%</span>
+            <p class="trust-stat__label">재구매율</p>
+          </div>
+        </div>
+
+        <!-- 특별한 이유 -->
+        <div class="trust-section__reasons">
+          <h2 class="section-title section-title--center" id="trustHeading">더 나음이 특별한 이유</h2>
+          <div class="trust-section__reasons-grid" role="list">
+            <div class="trust-reason" role="listitem">
+              <span class="trust-reason__icon" aria-hidden="true">🏅</span>
+              <strong>전문가 공동 기획</strong>
+              <p>재활의학과·스타일리스트 전문가 공동 기획</p>
+            </div>
+            <div class="trust-reason" role="listitem">
+              <span class="trust-reason__icon" aria-hidden="true">📐</span>
+              <strong>체형·상황 맞춤 설계</strong>
+              <p>개인 체형과 상황에 맞는 맞춤 의류 설계</p>
+            </div>
+            <div class="trust-reason" role="listitem">
+              <span class="trust-reason__icon" aria-hidden="true">🌿</span>
+              <strong>고품질 저자극 소재</strong>
+              <p>피부가 민감한 분들을 위한 안심 인증 소재</p>
+            </div>
+            <div class="trust-reason" role="listitem">
+              <span class="trust-reason__icon" aria-hidden="true">🔄</span>
+              <strong>편리한 교환/반품</strong>
+              <p>온라인으로 간편한 교환·반품 서비스 제공</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 실시간 배너 -->
+        <div class="trust-section__cta-banner">
+          <p class="trust-cta-text">궁금한 점이 있으신가요?</p>
+          <p class="trust-cta-sub">전문 상담전문 컨설턴트가 도와드릴게요.</p>
+          <a href="#" class="btn btn--primary btn--sm">💬 특 상담하기</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="footer" role="contentinfo">
+    <div class="footer__inner container">
+      <div class="footer__brand">
+        <p class="footer__brand-name">더 나음 (better &amp; care)</p>
+        <p class="footer__slogan">"당신의 일상에 편안함을, 삶에는 더 나은 가치를"</p>
+        <p class="footer__copy">© 2026 더 나음. All rights reserved.</p>
+      </div>
+      <nav class="footer__links" aria-label="푸터 링크">
+        <ul role="list">
+          <li><a href="#">이용약관</a></li>
+          <li><a href="#">개인정보처리방침</a></li>
+          <li><a href="#">고객센터</a></li>
+          <li><a href="#">공지사항</a></li>
+          <li><a href="#">입점문의</a></li>
+        </ul>
+      </nav>
+    </div>
+  </footer>
+
+  <!-- Toast 알림 -->
+  <div class="toast" id="toastMsg" role="alert" aria-live="assertive" aria-atomic="true" aria-hidden="true"></div>
+
+  <!-- 장바구니 모달 -->
+  <div class="modal-overlay" id="cartModalOverlay" aria-hidden="true"></div>
+  <section class="modal" id="cartModal" role="dialog" aria-modal="true" aria-labelledby="cartModalTitle" aria-hidden="true">
+    <div class="modal__header">
+      <h2 class="modal__title" id="cartModalTitle">장바구니</h2>
+      <button type="button" class="modal__close" id="cartModalClose" aria-label="장바구니 닫기">✕</button>
+    </div>
+    <div class="modal__body">
+      <div id="cartModalList" class="cart-modal__list" role="list"></div>
+      <div class="cart-modal__empty" id="cartModalEmpty">장바구니가 비어있어요. 상품 카드를 눌러 담아보세요.</div>
+    </div>
+    <div class="modal__footer">
+      <p class="cart-modal__summary">총 수량 <strong id="cartTotalQty">0</strong>개 · 예상 금액 <strong id="cartTotalPrice">₩ 0</strong></p>
+      <div class="modal__actions">
+        <button type="button" class="btn btn--outline" id="cartClearBtn">비우기</button>
+        <button type="button" class="btn btn--primary" id="cartCheckoutBtn">구매 진행</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 로그인/회원가입 모달 -->
+  <div class="modal-overlay" id="authModalOverlay" aria-hidden="true"></div>
+  <section class="modal modal--auth" id="authModal" role="dialog" aria-modal="true" aria-labelledby="authModalTitle" aria-hidden="true">
+    <div class="modal__header">
+      <h2 class="modal__title" id="authModalTitle">로그인 / 회원가입</h2>
+      <button type="button" class="modal__close" id="authModalClose" aria-label="로그인 창 닫기">✕</button>
+    </div>
+    <div class="modal__body">
+      <div class="auth-tabs" role="tablist" aria-label="인증 탭">
+        <button type="button" class="auth-tabs__btn active" id="authTabLogin" role="tab" aria-selected="true">로그인</button>
+        <button type="button" class="auth-tabs__btn" id="authTabSignup" role="tab" aria-selected="false">회원가입</button>
+      </div>
+
+      <form id="loginForm" class="auth-form" novalidate>
+        <label class="auth-form__label" for="loginEmail">이메일</label>
+        <input id="loginEmail" name="email" class="auth-form__input" type="email" maxlength="100" autocomplete="email" required />
+        <label class="auth-form__label" for="loginPassword">비밀번호</label>
+        <input id="loginPassword" name="password" class="auth-form__input" type="password" minlength="8" maxlength="64" autocomplete="current-password" required />
+        <button type="submit" class="btn btn--primary auth-form__submit">로그인</button>
+      </form>
+
+      <form id="signupForm" class="auth-form auth-form--hidden" novalidate>
+        <label class="auth-form__label" for="signupName">이름</label>
+        <input id="signupName" name="name" class="auth-form__input" type="text" maxlength="30" autocomplete="name" required />
+        <label class="auth-form__label" for="signupEmail">이메일</label>
+        <input id="signupEmail" name="email" class="auth-form__input" type="email" maxlength="100" autocomplete="email" required />
+        <label class="auth-form__label" for="signupPassword">비밀번호 (8자 이상)</label>
+        <input id="signupPassword" name="password" class="auth-form__input" type="password" minlength="8" maxlength="64" autocomplete="new-password" required />
+        <label class="auth-form__label" for="signupPasswordConfirm">비밀번호 확인</label>
+        <input id="signupPasswordConfirm" name="passwordConfirm" class="auth-form__input" type="password" minlength="8" maxlength="64" autocomplete="new-password" required />
+        <button type="submit" class="btn btn--primary auth-form__submit">회원가입</button>
+      </form>
+
+      <div id="authProfileView" class="auth-profile auth-form--hidden">
+        <p class="auth-profile__title">마이페이지</p>
+        <p class="auth-profile__name" id="authProfileName"></p>
+        <p class="auth-profile__email" id="authProfileEmail"></p>
+        <button type="button" class="btn btn--outline auth-profile__logout" id="authLogoutBtn">로그아웃</button>
+      </div>
+
+      <p class="auth-user" id="authUserStatus" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <!-- 데이터 및 스크립트 -->
+  <script src="data/products.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
