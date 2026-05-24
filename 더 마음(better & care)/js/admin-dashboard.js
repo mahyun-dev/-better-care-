@@ -19,9 +19,7 @@ const defaults = {
     { id: crypto.randomUUID(), iconMode: '문자', icon: '💼', image: '', name: '직종별 코디', menu: '퀵메뉴', visible: true }
   ],
   members: [
-    { id: crypto.randomUUID(), name: '강주아', email: 'jua@bettercare.com', role: '관리자', joinedAt: '2026-04-21', status: '활성' },
-    { id: crypto.randomUUID(), name: '김보호', email: 'caregiver@example.com', role: '보호자', joinedAt: '2026-05-04', status: '활성' },
-    { id: crypto.randomUUID(), name: '이시니어', email: 'senior@example.com', role: '일반', joinedAt: '2026-05-11', status: '휴면' }
+    { id: crypto.randomUUID(), name: '강주아', email: 'jua@bettercare.com', role: '관리자', joinedAt: '2026-05-24', status: '활성' }
   ]
 };
 
@@ -317,8 +315,8 @@ function bindModalImageInputs() {
         e.target.value = '';
         return;
       }
-      if (file.size > 2 * 1024 * 1024) {
-        toast('이미지 용량은 2MB 이하만 가능합니다.');
+      if (file.size > 5 * 1024 * 1024) {
+        toast('이미지 용량은 5MB 이하만 가능합니다.');
         e.target.value = '';
         return;
       }
