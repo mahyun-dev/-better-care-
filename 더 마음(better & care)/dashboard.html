@@ -22,6 +22,7 @@
       </div>
       <nav class="menu">
         <button class="menu__item is-active" data-tab="products" type="button">상품 관리</button>
+        <button class="menu__item" data-tab="categories" type="button">카테고리 관리</button>
         <button class="menu__item" data-tab="banners" type="button">배너 관리</button>
         <button class="menu__item" data-tab="icons" type="button">아이콘 관리</button>
         <button class="menu__item" data-tab="members" type="button">회원 관리</button>
@@ -43,6 +44,7 @@
 
       <section class="kpi-grid" aria-label="요약 지표">
         <article class="kpi-card"><p class="kpi-card__label">총 상품 수</p><p id="kpiProducts" class="kpi-card__value">0</p></article>
+        <article class="kpi-card"><p class="kpi-card__label">노출 카테고리</p><p id="kpiCategories" class="kpi-card__value">0</p></article>
         <article class="kpi-card"><p class="kpi-card__label">활성 배너</p><p id="kpiBanners" class="kpi-card__value">0</p></article>
         <article class="kpi-card"><p class="kpi-card__label">아이콘 세트</p><p id="kpiIcons" class="kpi-card__value">0</p></article>
         <article class="kpi-card"><p class="kpi-card__label">전체 회원</p><p id="kpiMembers" class="kpi-card__value">0</p></article>
@@ -64,6 +66,19 @@
         <div class="table-wrap">
           <table class="table" id="productsTable">
             <thead><tr><th>상품명</th><th>이미지</th><th>카테고리</th><th>가격</th><th>상태</th><th>관리</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="tab-categories" class="panel" aria-label="카테고리 관리 패널">
+        <div class="panel__head">
+          <h2>카테고리 관리</h2>
+          <button id="addCategoryBtn" class="btn" type="button">카테고리 추가</button>
+        </div>
+        <div class="table-wrap">
+          <table class="table" id="categoriesTable">
+            <thead><tr><th>아이콘</th><th>카테고리명</th><th>노출 상태</th><th>상품 수</th><th>관리</th></tr></thead>
             <tbody></tbody>
           </table>
         </div>

@@ -805,6 +805,16 @@ button { cursor: pointer; font-family: inherit; border: none; background: none; 
 .product-card__wish:hover, .product-card__wish.active { background: var(--color-accent-light); }
 .product-card__wish.active span { color: var(--color-accent); }
 .product-card__info { padding: 14px; }
+.product-card__category {
+  display: inline-block;
+  margin-bottom: 6px;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+  font-size: 12px;
+  font-weight: 700;
+}
 .product-card__name {
   font-size: var(--font-size-sm);
   font-weight: 700;
@@ -822,6 +832,17 @@ button { cursor: pointer; font-family: inherit; border: none; background: none; 
   font-weight: 800;
   color: var(--color-primary-dark);
   letter-spacing: -0.02em;
+}
+
+.best-codi__empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 24px 18px;
+  border: 1.5px dashed var(--color-border);
+  background: #fff;
+  border-radius: var(--radius-lg);
+  color: var(--color-text-muted);
+  font-weight: 600;
 }
 
 /* ── 10. 카테고리 ─────────────────────────── */
@@ -849,6 +870,15 @@ button { cursor: pointer; font-family: inherit; border: none; background: none; 
 .category-item:hover { color: var(--color-primary); }
 .category-item:hover .category-item__icon { background: var(--color-primary); box-shadow: 0 6px 18px rgba(245,166,35,0.3); }
 .category-item:hover .category-item__icon svg { color: #fff; }
+.category-item.is-active {
+  color: var(--color-primary);
+}
+.category-item.is-active .category-item__icon {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  box-shadow: 0 8px 22px rgba(245,166,35,0.35);
+  color: #fff;
+}
 .category-item__icon {
   width: 72px; height: 72px;
   border-radius: 50%;

@@ -50,6 +50,26 @@ const Storage = {
 
 const ADMIN_STORE_KEY = 'bc_admin_data_v1';
 let runtimeData = null;
+let selectedCategoryId = 'all';
+
+function toCatalogUrl(params = {}) {
+  const query = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    const normalized = String(value ?? '').trim();
+    if (!normalized) continue;
+    query.set(key, normalized);
+  }
+  const qs = query.toString();
+  return qs ? `pages.html?${qs}` : 'pages.html';
+}
+
+function slugifyText(value) {
+  return String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9\-가-힣]/g, '');
+}
 
 function safeImageSrc(src) {
   const value = String(src || '').trim();
@@ -62,13 +82,75 @@ function buildRuntimeData() {
   const base = BETTER_CARE_DATA;
   const admin = Storage.safeGet(ADMIN_STORE_KEY, null);
 
+  const categories = (() => {
+    if (!(admin && Array.isArray(admin.categories))) return base.categories;
+
+    const adminCategories = admin.categories
+      .filter(category => category && category.visible !== false)
+      .map((category, idx) => ({
+        id: String(category.id || `admin-category-${idx}`),
+        emoji: String(category.emoji || '📦'),
+        label: String(category.label || `카테고리 ${idx + 1}`),
+        href: '',
+      }));
+
+    const labels = new Set(adminCategories.map(category => category.label.trim().toLowerCase()));
+    if (Array.isArray(admin.products)) {
+      admin.products.forEach((product, idx) => {
+        const label = String(product?.category || '').trim();
+        if (!label) return;
+        const key = label.toLowerCase();
+        if (labels.has(key)) return;
+        labels.add(key);
+        adminCategories.push({
+          id: `admin-auto-${slugifyText(label) || idx}`,
+          emoji: '📦',
+          label,
+          href: '',
+        });
+      });
+    }
+
+    if (adminCategories.length === 0) return base.categories;
+
+    const normalized = adminCategories.map(category => ({
+      ...category,
+      href: toCatalogUrl({ categoryId: category.id, category: category.label }),
+    }));
+
+    return [
+      ...normalized,
+      { id: 'cat-all', emoji: '🗂️', label: '전체보기', href: toCatalogUrl({ category: 'all' }), isAll: true },
+    ];
+  })();
+
+  const categoryIdSet = new Set(categories.map(category => category.id));
+  const labelToCategory = new Map(
+    categories
+      .filter(category => !category.isAll)
+      .map(category => [category.label.trim().toLowerCase(), category])
+  );
+
+  const resolveCategory = (product) => {
+    if (product && categoryIdSet.has(String(product.categoryId || ''))) {
+      const category = categories.find(item => item.id === String(product.categoryId));
+      if (category) return category;
+    }
+
+    const byLabel = labelToCategory.get(String(product?.category || '').trim().toLowerCase());
+    if (byLabel) return byLabel;
+
+    const fallback = categories.find(category => !category.isAll);
+    return fallback || { id: 'cat-unknown', label: '기타' };
+  };
+
   const quickNav = (admin && Array.isArray(admin.icons)
     ? admin.icons
         .filter(icon => icon && icon.visible)
         .slice(0, 7)
         .map((icon, idx) => ({
           id: String(icon.id || `admin-icon-${idx}`),
-          href: '#',
+          href: toCatalogUrl({ quick: String(icon.name || `icon-${idx}`), source: 'quick-nav' }),
           label: String(icon.name || '아이콘'),
           iconMode: icon.iconMode === '이미지' ? '이미지' : '문자',
           emoji: String(icon.icon || '•'),
@@ -81,6 +163,7 @@ function buildRuntimeData() {
         .filter(product => product && product.status !== '숨김')
         .slice(0, 5)
         .map((product, idx) => {
+          const category = resolveCategory(product);
           const digits = String(product.price ?? '').replace(/[^0-9]/g, '');
           const amount = digits ? parseInt(digits, 10) : 0;
           return {
@@ -91,9 +174,21 @@ function buildRuntimeData() {
             name: String(product.name || `상품 ${idx + 1}`),
             price: `₩ ${amount.toLocaleString('ko-KR')}`,
             period: '/ 회',
+            categoryId: category.id,
+            categoryLabel: category.label,
           };
         })
     : []);
+
+  const baseBestCodi = base.bestCodi.map((product, idx) => {
+    const category = resolveCategory(product);
+    return {
+      ...product,
+      id: String(product.id || `base-product-${idx}`),
+      categoryId: category.id,
+      categoryLabel: category.label,
+    };
+  });
 
   const banners = (admin && Array.isArray(admin.banners)
     ? admin.banners
@@ -108,14 +203,56 @@ function buildRuntimeData() {
     : []);
 
   return {
-    quickNav: quickNav.length > 0 ? quickNav : base.quickNav,
-    bestCodi: bestCodi.length > 0 ? bestCodi : base.bestCodi,
+    quickNav: (quickNav.length > 0 ? quickNav : base.quickNav).map(item => ({
+      ...item,
+      href: (typeof item.href === 'string' && item.href !== '#' && !item.href.startsWith('#'))
+        ? item.href
+        : toCatalogUrl({ quick: item.id || item.label || 'quick' }),
+    })),
+    bestCodi: bestCodi.length > 0 ? bestCodi : baseBestCodi,
     banners,
-    categories: base.categories,
-    careCards: base.careCards,
-    occupations: base.occupations,
-    specialCodi: base.specialCodi,
+    categories: categories.map(category => ({
+      ...category,
+      href: (typeof category.href === 'string' && category.href !== '#')
+        ? category.href
+        : toCatalogUrl({ categoryId: category.isAll ? 'all' : category.id, category: category.label }),
+    })),
+    careCards: base.careCards.map(item => ({
+      ...item,
+      href: (typeof item.href === 'string' && item.href !== '#')
+        ? item.href
+        : toCatalogUrl({ care: item.id }),
+    })),
+    occupations: base.occupations.map(item => ({
+      ...item,
+      href: (typeof item.href === 'string' && item.href !== '#')
+        ? item.href
+        : toCatalogUrl({ occupation: item.label }),
+    })),
+    specialCodi: base.specialCodi.map(item => ({
+      ...item,
+      href: (typeof item.href === 'string' && item.href !== '#')
+        ? item.href
+        : toCatalogUrl({ special: item.id }),
+    })),
   };
+}
+
+function resolveCategoryFromRoute() {
+  if (!runtimeData?.categories) return 'all';
+  const params = new URLSearchParams(window.location.search);
+  const categoryId = String(params.get('categoryId') || '').trim();
+  const category = String(params.get('category') || '').trim().toLowerCase();
+
+  if (category === 'all') return 'all';
+
+  const direct = runtimeData.categories.find(item => !item.isAll && item.id === categoryId);
+  if (direct) return direct.id;
+
+  const byLabel = runtimeData.categories.find(item => !item.isAll && item.label.trim().toLowerCase() === category);
+  if (byLabel) return byLabel.id;
+
+  return '';
 }
 
 /** 숫자 카운트업 애니메이션 */
@@ -275,24 +412,40 @@ function renderBestCodi() {
 
   container.textContent = '';
 
+  const allProducts = runtimeData.bestCodi;
+  const visibleProducts = selectedCategoryId === 'all'
+    ? allProducts
+    : allProducts.filter(item => item.categoryId === selectedCategoryId);
+
+  if (visibleProducts.length === 0) {
+    const empty = createElement('div', {
+      className: 'best-codi__empty',
+      ariaLabel: '선택한 카테고리에 상품이 없습니다.',
+    });
+    empty.textContent = '선택한 카테고리에 노출 가능한 상품이 아직 없습니다.';
+    container.appendChild(empty);
+    return;
+  }
+
   const fragment = document.createDocumentFragment();
 
-  for (const item of runtimeData.bestCodi) {
+  visibleProducts.forEach((item, index) => {
+    const displayRank = index + 1;
     const article = createElement('article', {
       className: 'product-card',
       role: 'listitem',
       'data-id': item.id,
       'data-animate': '',
-      'aria-label': `${item.rank}위 ${item.name} ${item.price}${item.period}`,
+      'aria-label': `${displayRank}위 ${item.name} ${item.price}${item.period}`,
     });
 
     // 순위 배지
-    const rankClass = item.rank <= 3
-      ? `product-card__rank product-card__rank--${item.rank}`
+    const rankClass = displayRank <= 3
+      ? `product-card__rank product-card__rank--${displayRank}`
       : 'product-card__rank product-card__rank--other';
     const rankBadge = createElement('span', { className: rankClass });
     rankBadge.setAttribute('aria-hidden', 'true');
-    rankBadge.textContent = String(item.rank);
+    rankBadge.textContent = String(displayRank);
 
     // 이미지 영역
     const imgDiv = createElement('div', { className: 'product-card__img', role: 'img', ariaLabel: `${item.name} 상품 이미지` });
@@ -329,6 +482,11 @@ function renderBestCodi() {
     const infoDiv = document.createElement('div');
     infoDiv.className = 'product-card__info';
 
+    if (item.categoryLabel) {
+      const category = createElement('span', { className: 'product-card__category', textContent: item.categoryLabel });
+      infoDiv.appendChild(category);
+    }
+
     const name = createElement('p', { className: 'product-card__name', textContent: item.name });
     const price = createElement('p', { className: 'product-card__price' });
     price.textContent = `${item.price} ${item.period}`;
@@ -340,11 +498,17 @@ function renderBestCodi() {
     article.appendChild(imgDiv);
     article.appendChild(infoDiv);
 
-    // 카드 클릭 → 장바구니 추가 (실제 서비스에선 상품 상세로 이동)
-    article.addEventListener('click', () => Cart.add(item.id, item.name));
+    // 카드 클릭 시 상품 페이지로 이동
+    article.addEventListener('click', () => {
+      window.location.href = toCatalogUrl({
+        productId: item.id,
+        categoryId: item.categoryId,
+        category: item.categoryLabel,
+      });
+    });
 
     fragment.appendChild(article);
-  }
+  });
   container.appendChild(fragment);
 }
 
@@ -354,9 +518,16 @@ function renderBestCodi() {
 function renderCategories() {
   const container = document.getElementById('categoryList');
   if (!container || !runtimeData?.categories) return;
+
+  container.textContent = '';
+
+  const validCategoryIds = new Set(runtimeData.categories.map(item => item.isAll ? 'all' : item.id));
+  if (!validCategoryIds.has(selectedCategoryId)) selectedCategoryId = 'all';
+
   const fragment = document.createDocumentFragment();
 
   for (const item of runtimeData.categories) {
+    const filterId = item.isAll ? 'all' : item.id;
     const li = document.createElement('li');
     li.setAttribute('role', 'listitem');
 
@@ -366,6 +537,10 @@ function renderCategories() {
       ariaLabel: `${item.label} 카테고리 보기`,
     });
     if (item.isAll) a.classList.add('category-item--all');
+    if (selectedCategoryId === filterId) {
+      a.classList.add('is-active');
+      a.setAttribute('aria-current', 'true');
+    }
 
     const iconDiv = createElement('div', { className: 'category-item__icon', 'aria-hidden': 'true' });
     iconDiv.textContent = item.emoji;
@@ -497,8 +672,14 @@ function renderHeroBanner() {
 }
 
 function refreshAdminDrivenSections(showMessage = false) {
+  const previousCategoryId = selectedCategoryId;
   runtimeData = buildRuntimeData();
+  const routeCategoryId = resolveCategoryFromRoute();
+  const availableIds = new Set((runtimeData.categories || []).map(item => item.isAll ? 'all' : item.id));
+  if (routeCategoryId && availableIds.has(routeCategoryId)) selectedCategoryId = routeCategoryId;
+  else selectedCategoryId = availableIds.has(previousCategoryId) ? previousCategoryId : 'all';
   renderQuickNav();
+  renderCategories();
   renderBestCodi();
   renderHeroBanner();
   if (showMessage) showToast('관리자 변경사항이 반영되었습니다.');
@@ -1063,7 +1244,6 @@ function init() {
 
   // 렌더링
   refreshAdminDrivenSections();
-  renderCategories();
   renderCareCards();
   renderOccupations();
   renderSpecialCodi();

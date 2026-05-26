@@ -9,6 +9,16 @@ const defaults = {
     { id: crypto.randomUUID(), name: '휠체어 케어 팬츠', image: '', category: '하의', price: 69000, status: '판매중' },
     { id: crypto.randomUUID(), name: '재활 소프트 자켓', image: '', category: '아우터', price: 89000, status: '품절' }
   ],
+  categories: [
+    { id: crypto.randomUUID(), label: '아우터', emoji: '🧥', visible: true },
+    { id: crypto.randomUUID(), label: '상의', emoji: '👕', visible: true },
+    { id: crypto.randomUUID(), label: '하의', emoji: '👖', visible: true },
+    { id: crypto.randomUUID(), label: '원피스', emoji: '👗', visible: true },
+    { id: crypto.randomUUID(), label: '이너웨어', emoji: '🩱', visible: true },
+    { id: crypto.randomUUID(), label: '신발', emoji: '👟', visible: true },
+    { id: crypto.randomUUID(), label: '가방', emoji: '👜', visible: true },
+    { id: crypto.randomUUID(), label: '액세서리', emoji: '💍', visible: true }
+  ],
   banners: [
     { id: crypto.randomUUID(), name: '메인 히어로 배너', image: '', position: '메인 상단', period: '2026-05-01 ~ 2026-08-31', active: true },
     { id: crypto.randomUUID(), name: '케어룩 프로모션', image: '', position: '중단 배너', period: '2026-05-15 ~ 2026-06-30', active: false }
@@ -39,6 +49,16 @@ function loadState() {
       products: Array.isArray(parsed.products)
         ? parsed.products.map(p => ({ ...p, image: typeof p.image === 'string' ? p.image : '' }))
         : structuredClone(defaults.products),
+      categories: Array.isArray(parsed.categories)
+        ? parsed.categories
+            .filter(c => c && typeof c.label === 'string')
+            .map(c => ({
+              id: c.id || crypto.randomUUID(),
+              label: String(c.label || '').trim() || '기타',
+              emoji: typeof c.emoji === 'string' && c.emoji.trim() ? c.emoji.trim() : '📦',
+              visible: c.visible !== false,
+            }))
+        : structuredClone(defaults.categories),
       banners: Array.isArray(parsed.banners)
         ? parsed.banners.map(b => ({ ...b, image: typeof b.image === 'string' ? b.image : '' }))
         : structuredClone(defaults.banners),
@@ -153,6 +173,7 @@ function readFileAsDataURL(file) {
 
 function renderKPIs() {
   document.getElementById('kpiProducts').textContent = state.products.length;
+  document.getElementById('kpiCategories').textContent = state.categories.filter(v => v.visible).length;
   document.getElementById('kpiBanners').textContent = state.banners.filter(v => v.active).length;
   document.getElementById('kpiIcons').textContent = state.icons.length;
   document.getElementById('kpiMembers').textContent = state.members.length;
@@ -203,6 +224,31 @@ function renderBanners() {
   `).join('');
 }
 
+function renderCategoriesAdmin() {
+  const tbody = document.querySelector('#categoriesTable tbody');
+  const query = document.getElementById('globalSearch').value.trim().toLowerCase();
+  const list = state.categories.filter(c => {
+    return !query || [c.label, c.emoji, c.visible ? '노출' : '숨김'].join(' ').toLowerCase().includes(query);
+  });
+
+  tbody.innerHTML = list.map(c => {
+    const productCount = state.products.filter(p => p.categoryId === c.id || p.category === c.label).length;
+    return `
+      <tr>
+        <td><span class="category-emoji" aria-hidden="true">${escapeHtml(c.emoji)}</span></td>
+        <td>${escapeHtml(c.label)}</td>
+        <td>${badge(c.visible ? '노출' : '비활성')}</td>
+        <td>${productCount.toLocaleString('ko-KR')}</td>
+        <td class="row-actions">
+          <button data-act="toggle-category" data-id="${c.id}">${c.visible ? '숨김' : '노출'}</button>
+          <button data-act="edit-category" data-id="${c.id}">수정</button>
+          <button class="btn--danger" data-act="del-category" data-id="${c.id}">삭제</button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
 function renderIcons() {
   const tbody = document.querySelector('#iconsTable tbody');
   const query = document.getElementById('globalSearch').value.trim().toLowerCase();
@@ -251,6 +297,7 @@ function renderMembers() {
 function renderAll() {
   renderKPIs();
   renderProducts();
+  renderCategoriesAdmin();
   renderBanners();
   renderIcons();
   renderMembers();
@@ -286,9 +333,15 @@ function openModal(mode, type, id = null) {
   title.textContent = `${mode === 'add' ? '추가' : '수정'} - ${labelOf(type)}`;
 
   fields.innerHTML = schema(type).map(f => {
-    const v = item ? item[f.key] : '';
+    const rawValue = item ? item[f.key] : '';
+    const v = (type === 'categories' && f.key === 'visible')
+      ? (rawValue === false ? '숨김' : '노출')
+      : rawValue;
     if (f.type === 'select') {
-      return `<label data-field="${f.key}">${f.label}<select name="${f.key}">${f.options.map(o => `<option value="${o}" ${String(v) === o ? 'selected' : ''}>${o}</option>`).join('')}</select></label>`;
+      const options = Array.isArray(f.options) ? [...f.options] : [];
+      const current = String(v || '');
+      if (current && !options.includes(current)) options.push(current);
+      return `<label data-field="${f.key}">${f.label}<select name="${f.key}">${options.map(o => `<option value="${o}" ${current === o ? 'selected' : ''}>${o}</option>`).join('')}</select></label>`;
     }
     if (f.type === 'image') {
       const safe = safeImageSrc(v);
@@ -357,16 +410,26 @@ function bindIconModeFields() {
 }
 
 function labelOf(type) {
-  return ({ products: '상품', banners: '배너', icons: '아이콘', members: '회원' })[type];
+  return ({ products: '상품', categories: '카테고리', banners: '배너', icons: '아이콘', members: '회원' })[type];
+}
+
+function getProductCategoryOptions() {
+  const options = state.categories.map(c => String(c.label || '').trim()).filter(Boolean);
+  return options.length > 0 ? options : ['기타'];
 }
 
 function schema(type) {
   if (type === 'products') return [
     { key: 'name', label: '상품명', type: 'text', max: 40 },
     { key: 'image', label: '상품 이미지', type: 'image' },
-    { key: 'category', label: '카테고리', type: 'text', max: 20 },
+    { key: 'category', label: '카테고리', type: 'select', options: getProductCategoryOptions() },
     { key: 'price', label: '가격', type: 'number' },
     { key: 'status', label: '상태', type: 'select', options: ['판매중', '품절', '숨김'] }
+  ];
+  if (type === 'categories') return [
+    { key: 'label', label: '카테고리명', type: 'text', max: 20 },
+    { key: 'emoji', label: '카테고리 아이콘', type: 'text', max: 4 },
+    { key: 'visible', label: '노출 상태', type: 'select', options: ['노출', '숨김'] },
   ];
   if (type === 'banners') return [
     { key: 'name', label: '배너명', type: 'text', max: 40 },
@@ -402,7 +465,30 @@ function submitModal() {
       payload[f.key] = modalUploads[f.key] || (existing ? existing[f.key] : '') || '';
     });
 
-  if (modalContext.type === 'products') payload.price = Number(payload.price || 0);
+  if (modalContext.type === 'products') {
+    payload.price = Number(payload.price || 0);
+    const categoryName = String(payload.category || '').trim();
+    const matchedCategory = state.categories.find(c => c.label === categoryName);
+    payload.category = categoryName || '기타';
+    payload.categoryId = matchedCategory ? matchedCategory.id : '';
+  }
+  if (modalContext.type === 'categories') {
+    payload.label = String(payload.label || '').trim();
+    payload.emoji = String(payload.emoji || '').trim() || '📦';
+    payload.visible = payload.visible !== '숨김';
+
+    if (!payload.label) {
+      toast('카테고리명을 입력해주세요.');
+      return;
+    }
+
+    const normalized = payload.label.toLowerCase();
+    const duplicated = state.categories.some(c => c.id !== modalContext.id && c.label.toLowerCase() === normalized);
+    if (duplicated) {
+      toast('같은 이름의 카테고리가 이미 있습니다.');
+      return;
+    }
+  }
   if (modalContext.type === 'banners' && modalContext.mode === 'add') payload.active = true;
   if (modalContext.type === 'icons') {
     payload.iconMode = payload.iconMode === '이미지' ? '이미지' : '문자';
@@ -431,6 +517,14 @@ function submitModal() {
     state[modalContext.type].unshift({ id: crypto.randomUUID(), ...payload });
     toast(`${labelOf(modalContext.type)} 추가 완료`);
   } else {
+    if (modalContext.type === 'categories' && existing && existing.label !== payload.label) {
+      state.products = state.products.map(product => {
+        const isTarget = product.categoryId === existing.id || product.category === existing.label;
+        return isTarget
+          ? { ...product, category: payload.label, categoryId: existing.id }
+          : product;
+      });
+    }
     state[modalContext.type] = state[modalContext.type].map(v => v.id === modalContext.id ? { ...v, ...payload } : v);
     toast(`${labelOf(modalContext.type)} 수정 완료`);
   }
@@ -455,6 +549,7 @@ function bindEvents() {
   });
 
   document.getElementById('addProductBtn').addEventListener('click', () => openModal('add', 'products'));
+  document.getElementById('addCategoryBtn').addEventListener('click', () => openModal('add', 'categories'));
   document.getElementById('addBannerBtn').addEventListener('click', () => openModal('add', 'banners'));
   document.getElementById('addIconBtn').addEventListener('click', () => openModal('add', 'icons'));
 
@@ -466,6 +561,20 @@ function bindEvents() {
     if (act === 'toggle-product') state.products = state.products.map(v => v.id === id ? { ...v, status: v.status === '판매중' ? '숨김' : '판매중' } : v);
     if (act === 'edit-product') openModal('edit', 'products', id);
     if (act === 'del-product') removeById('products', id);
+
+    if (act === 'toggle-category') state.categories = state.categories.map(v => v.id === id ? { ...v, visible: !v.visible } : v);
+    if (act === 'edit-category') openModal('edit', 'categories', id);
+    if (act === 'del-category') {
+      const target = state.categories.find(v => v.id === id);
+      if (target) {
+        const inUse = state.products.some(product => product.categoryId === target.id || product.category === target.label);
+        if (inUse) {
+          toast('이 카테고리를 사용하는 상품이 있어 삭제할 수 없습니다.');
+          return;
+        }
+      }
+      removeById('categories', id);
+    }
 
     if (act === 'toggle-banner') state.banners = state.banners.map(v => v.id === id ? { ...v, active: !v.active } : v);
     if (act === 'edit-banner') openModal('edit', 'banners', id);
